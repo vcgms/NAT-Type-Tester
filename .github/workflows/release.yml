@@ -25,7 +25,8 @@ jobs:
       - name: Install SDK 35
         run: |
           yes | $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager --licenses > /dev/null 2>&1 || true
-          $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager "platforms;android-35"
+          $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager "platforms;android-35" "build-tools;35.0.0"
+          echo "sdk.dir=$ANDROID_HOME" > NatTypeTester-Android/local.properties
           
       - name: Grant execute permission for gradlew
         run: chmod +x NatTypeTester-Android/gradlew
@@ -33,7 +34,7 @@ jobs:
       - name: Build Release APK
         run: |
           cd NatTypeTester-Android
-          ./gradlew assembleRelease --stacktrace
+          ./gradlew assembleRelease --stacktrace --no-daemon
           
       - name: Sign APK
         run: |
