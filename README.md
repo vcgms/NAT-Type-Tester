@@ -11,6 +11,12 @@
 - 可折叠的检测详细信息和日志
 - 一键复制检测日志
 
+## 运行截图
+
+<div align="center">
+  <img src="screenshots/result_screenshots.jpg" alt="检测结果页面" width="600" />
+</div>
+
 ## 技术栈
 
 - **语言**：Kotlin
