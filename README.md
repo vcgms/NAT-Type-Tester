@@ -37,6 +37,17 @@ bash build_android.sh
 
 构建产物位于 `NatTypeTester-Android/app/build/outputs/apk/release/NatTypeTester-{version}.apk`，同时自动拷贝到项目根目录。
 
+## 自动发布
+
+推送 Git tag 即可触发 GitHub Actions 自动构建和发布：
+
+```bash
+git tag v1.1.24
+git push origin v1.1.24
+```
+
+构建完成后，APK 会自动出现在 [Releases](https://github.com/vcgms/NAT-Type-Tester/releases) 页面。
+
 ## 项目结构
 
 ```
