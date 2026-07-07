@@ -21,18 +21,23 @@ jobs:
           
       - name: Setup Android SDK
         uses: android-actions/setup-android@v3
-        
+        with:
+          api-level: 35
+          build-tools: 35.0.0
+          accept-android-sdk-licenses: yes
+          
       - name: Grant execute permission for gradlew
         run: chmod +x NatTypeTester-Android/gradlew
         
       - name: Build Release APK
         run: |
           cd NatTypeTester-Android
-          ./gradlew assembleRelease
+          ./gradlew assembleRelease --stacktrace
           
       - name: Sign APK
         run: |
           # 生成 debug keystore（CI 环境不存在）
+          mkdir -p ~/.android
           keytool -genkey -v \
             -keystore ~/.android/debug.keystore \
             -storepass android \
@@ -41,10 +46,12 @@ jobs:
             -keyalg RSA \
             -keysize 2048 \
             -validity 10000 \
-            -dname "CN=Android Debug,O=Android,C=US"
+            -dname "CN=Android Debug,O=Android,C=US" \
+            -noprompt
           cd NatTypeTester-Android/app/build/outputs/apk/release
           cp app-release-unsigned.apk NatTypeTester.apk
-          $ANDROID_HOME/build-tools/*/apksigner sign \
+          APKSIGNER=$(ls -d $ANDROID_HOME/build-tools/*/ | sort -V | tail -1)apksigner
+          $APKSIGNER sign \
             --ks ~/.android/debug.keystore \
             --ks-pass pass:android \
             --ks-key-alias androiddebugkey \
