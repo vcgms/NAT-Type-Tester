@@ -27,23 +27,14 @@ jobs:
         
       - name: Install SDK 35
         run: |
-          echo "ANDROID_HOME=$ANDROID_HOME"
           yes | $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager --licenses > /dev/null 2>&1 || true
           $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager "platforms;android-35" "build-tools;35.0.0"
           echo "sdk.dir=$ANDROID_HOME" > NatTypeTester-Android/local.properties
-          echo "=== SDK contents ==="
-          ls -la $ANDROID_HOME/platforms/ || true
-          ls -la $ANDROID_HOME/build-tools/ || true
           
       - name: Build Release APK
         run: |
           cd NatTypeTester-Android
-          echo "ANDROID_HOME=$ANDROID_HOME"
-          echo "JAVA_HOME=$JAVA_HOME"
-          echo "=== Gradle version ==="
-          ./gradlew --version
-          echo "=== Building ==="
-          ./gradlew assembleRelease --stacktrace
+          ./gradlew assembleRelease
           
       - name: Sign APK
         run: |
@@ -82,15 +73,7 @@ jobs:
         with:
           tag_name: ${{ github.ref_name }}
           name: Release v${{ steps.version.outputs.version }}
-          body: |
-            ## 更新内容
-            
-            - 版本：v${{ steps.version.outputs.version }}
-            - 构建时间：$(date '+%Y-%m-%d %H:%M:%S')
-            
-            ### 安装说明
-            
-            下载 `NatTypeTester.apk` 并安装到 Android 设备（最低支持 Android 8.0）。
+          body: ""
           files: NatTypeTester-Android/app/build/outputs/apk/release/NatTypeTester.apk
           draft: false
           prerelease: false
