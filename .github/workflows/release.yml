@@ -36,9 +36,14 @@ jobs:
           cd NatTypeTester-Android
           ./gradlew assembleRelease
           
+      - name: Extract version
+        id: version
+        run: |
+          VERSION=$(grep 'versionName' NatTypeTester-Android/app/build.gradle.kts | head -1 | sed 's/.*"\(.*\)".*/\1/')
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+          
       - name: Sign APK
         run: |
-          # 生成 debug keystore（CI 环境不存在）
           mkdir -p ~/.android
           keytool -genkey -v \
             -keystore ~/.android/debug.keystore \
@@ -50,8 +55,9 @@ jobs:
             -validity 10000 \
             -dname "CN=Android Debug,O=Android,C=US" \
             -noprompt
+          VERSION=$(grep 'versionName' NatTypeTester-Android/app/build.gradle.kts | head -1 | sed 's/.*"\(.*\)".*/\1/')
           cd NatTypeTester-Android/app/build/outputs/apk/release
-          cp app-release-unsigned.apk NatTypeTester.apk
+          cp app-release-unsigned.apk NatTypeTester-${VERSION}.apk
           APKSIGNER=$(ls -d $ANDROID_HOME/build-tools/*/ | sort -V | tail -1)apksigner
           $APKSIGNER sign \
             --ks ~/.android/debug.keystore \
@@ -60,21 +66,15 @@ jobs:
             --key-pass pass:android \
             --v1-signing-enabled true \
             --v2-signing-enabled true \
-            NatTypeTester.apk
+            NatTypeTester-${VERSION}.apk
             
-      - name: Extract version from build.gradle.kts
-        id: version
-        run: |
-          VERSION=$(grep 'versionName' NatTypeTester-Android/app/build.gradle.kts | head -1 | sed 's/.*"\(.*\)".*/\1/')
-          echo "version=$VERSION" >> $GITHUB_OUTPUT
-          
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v1
         with:
           tag_name: ${{ github.ref_name }}
           name: Release v${{ steps.version.outputs.version }}
           body: ""
-          files: NatTypeTester-Android/app/build/outputs/apk/release/NatTypeTester.apk
+          files: NatTypeTester-Android/app/build/outputs/apk/release/NatTypeTester-${{ steps.version.outputs.version }}.apk
           draft: false
           prerelease: false
         env:
