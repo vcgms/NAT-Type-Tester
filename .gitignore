@@ -1,0 +1,25 @@
+# 构建产物
+*.apk
+*.aab
+*.idsig
+
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# IDE
+.idea/
+*.iml
+
+# Android
+local.properties
+.gradle/
+
+# Gradle
+build/
+*/build/
+
+# 其他
+*.log
+*.tmp
